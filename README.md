@@ -1,6 +1,9 @@
 # opsi
 Full OPC-UA server based on Milo and public device drivers
 
+Note: opsi is just a temporary name, no checks have been made to see if it is a
+copyrighted word or like. Assume this name will be changed.
+
 ## Objectives of this project
 
 We would like to assemble an OPC-UA server configurable and ready to use in a 
@@ -44,9 +47,15 @@ Here a list of projects which could have interesting parts to build drivers.
 
 ### Fanuc
 
-Here I have some working code which is able to send a full g-code part program to a
+I have some working Java code which is able to send a full g-code part program to a
 Fanuc CNC and the machine status can be read with MT-Connect if the interface is available
-or directly. The code is based on Fanuc official libraries.
+or directly. The code is based on Fanuc official libraries and parts of the Android Java code
+available with those libraries. Of course I cannot publish it here.
+
+The Java code loads the Windows Fanuc DLLs or the Linux Fanuc library to send the part program,
+while reading the machine status is more easy and can be done directly.
+
+- https://www.inventcom.net/fanuc-focas-library/general/fwlib32
 
 ### CSV
 
