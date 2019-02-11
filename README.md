@@ -4,6 +4,11 @@ Full OPC-UA server based on Milo and public device drivers
 Note: opsi is just a temporary name, no checks have been made to see if it is a
 copyrighted word or like. Assume this name will be changed.
 
+## Discussing
+
+I've opened a [Slack channel](https://opsigroup.slack.com) but any other
+team workspace suggest is welcome.
+
 ## Objectives of this project
 
 We would like to assemble an OPC-UA server configurable and ready to use in a 
@@ -33,9 +38,9 @@ Last we need to develop the real server or better that part of the server which 
 the configuration, creates the namespaces and the OPC-UA nodes. Here an important knowledge
 of Milo and the OPC-UA standard is mandatory. Anyone?
 
-## Drivers
+## Adapters
 
-Here a list of projects which could have interesting parts to build drivers.
+Here a list of projects which could have interesting parts to build <a href="adapters.md">adapters</a>.
 
 ### Modbus
 
