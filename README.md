@@ -88,6 +88,10 @@ and exposes the data knowing how to communicate with the devices, possibly with 
 For sure we need simulator to test the drivers or better to test the drivers integration
 with the server.
 
+### OPC-UA
+
+- https://www.unified-automation.com/downloads/opc-ua-clients.html
+
 ### Modbus
 
 - https://sourceforge.net/projects/modbuspal/
