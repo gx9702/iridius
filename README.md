@@ -38,9 +38,22 @@ Last we need to develop the real server or better that part of the server which 
 the configuration, creates the namespaces and the OPC-UA nodes. Here an important knowledge
 of Milo and the OPC-UA standard is mandatory. Anyone?
 
-## Adapters
+## Devices
 
-Here a list of projects which could have interesting parts to build <a href="adapters.md">adapters</a>.
+The OPC-UA server should expose to the World our devices. So we need the concept of _device_
+which should do two main things: define what of our machine is exposed via OPC-UA and so
+get that values a provide them to the OPC-UA server and write back values from the OPC-UA server
+to the device.
+
+In this project a _device_ is a software component able to intermediate between the machine and the 
+OPC-UA server.
+
+Of course a _device_ could include ready-to-use libraries which implement special industry protocols
+(like modbus, Siemens S7, ...) or be a full implementation of a communication stack with
+custom machines, not standard PLC and so on.
+
+Here a list of projects which could have interesting parts to build a _device_. More in-dept
+documentation on devices in this <a href="devices.md">page</a>.
 
 ### Modbus
 
@@ -82,6 +95,12 @@ and exposes the data knowing how to communicate with the devices, possibly with 
 - https://www.mtconnect.org
 - https://github.com/mtconnect
 - https://www.mtconnect.org/opc-ua-companion-specification/
+
+### HTTP
+
+There are machines which, usually via their HMI, expose data via HTTP only. Since the number of ways
+to send data via HTTP is enormous, a device basic implementation could be created to address the common issues
+(how to start and keep a connection, how to recover dropped connection, how to deal with proxies and so on).
 
 ## Simulators and clients
 

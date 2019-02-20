@@ -1,0 +1,47 @@
+{
+    "server": {
+
+    },
+    "namespaces": [
+        
+        {
+            "name": "Namespace 1",
+            "uri": "urn:opsi:namespace1",
+            
+            "devices": [
+                {
+                    "name": "Device 1",
+                        "type": "it.itere.opsi.devices.DummyDevice",
+                        "config" : {
+                            "ip": "120.0.0.1",
+                            "key1": "value 1"
+                    }
+                },
+                
+                {
+                    "name": "Device 2",
+                        "type": "it.itere.opsi.devices.MQTTDevice",
+                        "config" : {
+                            "url": "tcp://test.mosquitto.org:1883",
+                            "topic": "/Boiler/#",
+                            "payload": "json"
+                        }
+                },
+                
+                {
+                    "name": "CSV Device",
+                        "type": "it.itere.opsi.devices.CSVDevice",
+                        "config" : {
+                            "fields": ["temperature"],
+                            "file": "c:/progetti/dati.csv",
+                            "interval": "1000"
+                    }
+                }
+            ]
+        },
+        
+        {
+            "name": "Namespace 2"
+        }
+    ]
+}
