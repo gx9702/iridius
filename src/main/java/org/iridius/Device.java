@@ -5,9 +5,11 @@
  */
 package org.iridius;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
+import org.eclipse.milo.opcua.sdk.server.nodes.UaFolderNode;
+import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 
 /**
  * This represents a generic device we're connecting to the Opsi server using an
@@ -25,8 +27,12 @@ public abstract class Device {
 
     protected String name;
     protected Map config;
-    protected List<DeviceTag> tags;
+    protected List<DeviceTag> tags = new ArrayList();
     protected boolean initialized = false;
+    private IridiusNamespace namespace = null;
+    
+    // Should be an ObjectNode interface?
+    private UaFolderNode node = null;
     
     /**
      * Called on initialization and called again on reinitialization.
@@ -35,11 +41,10 @@ public abstract class Device {
         if (initialized) {
             shutdown();
         }
-        
     }
     
-    
     public void shutdown() {
+        setNamespace(null);
     }
 
     public String getName() {
@@ -58,12 +63,39 @@ public abstract class Device {
         this.config = config;
     }    
     
-    public abstract List<DeviceTag> getTags();
-    
-    public void write(DeviceTag tag, Variant value){
+    // From name space
+    public void write(DeviceTag tag, DataValue value){
     }
     
-    public Object read(DeviceTag tag){
-        return "";
+    // From namespace
+    public DataValue read(DeviceTag tag){
+        return null;
+    }
+
+    public IridiusNamespace getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(IridiusNamespace namespace) {
+        this.namespace = namespace;
+    }
+
+    public UaFolderNode getNode() {
+        return node;
+    }
+
+    public void setNode(UaFolderNode node) {
+        this.node = node;
+    }
+    
+    public void addTag(DeviceTag tag) {
+        tag.setDevice(this);
+        namespace.addTag(tag);
+        tags.add(tag);
+    }
+    
+    // ???
+    public void setValue(DeviceTag tag, DataValue value) {
+        namespace.setValue(tag, value);
     }
 }

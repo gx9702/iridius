@@ -29,7 +29,7 @@ public class MQTTDevice extends Device implements MqttCallback {
 
     MqttClient myClient;
     MqttConnectOptions connOpt;
-
+/*
     @Override
     public List<DeviceTag> getTags() {
         
@@ -83,8 +83,8 @@ public class MQTTDevice extends Device implements MqttCallback {
         //tags.put("main", node);
 
         return nodes;
-*/
-    }
+
+    }*/
 
     @Override
     public void setConfig(Map config) {

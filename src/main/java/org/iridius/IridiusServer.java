@@ -198,7 +198,8 @@ public class IridiusServer {
                     ns.addDevice(device);
                 } catch (Exception e) {
                     System.err.println("Unable to instantiate the device: " + deviceData);
-                    //e.printStackTrace();
+                    System.err.println(e);
+                    e.printStackTrace();
                 }
             }
         }

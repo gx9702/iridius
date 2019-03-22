@@ -12,6 +12,8 @@
  */
 package org.iridius;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -57,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
+import org.eclipse.milo.opcua.stack.core.types.structured.VariableNode;
 
 public class IridiusNamespace implements Namespace {
 
@@ -73,7 +76,8 @@ public class IridiusNamespace implements Namespace {
     String uri;
     Map config;
     
-    Map<UaNode, DeviceTag> nodesToTags = new HashMap<>();
+    BiMap<UaVariableNode, DeviceTag> nodesToTags = HashBiMap.create();
+    BiMap<UaFolderNode, Device> nodesToDevices = HashBiMap.create();
     
     // Keeps track of all added devices (maybe it is not useful).
     Set<Device> devices = new HashSet();
@@ -122,9 +126,6 @@ public class IridiusNamespace implements Namespace {
      */
     public void addDevice(Device device) {
         
-        // Just a container of all added devices
-        devices.add(device);
-        
         // Create a folder for each device added
         UaFolderNode folder = new UaFolderNode(
                 server.getNodeMap(),
@@ -132,19 +133,23 @@ public class IridiusNamespace implements Namespace {
                 new QualifiedName(namespaceIndex, device.getName()),
                 LocalizedText.english(device.getName())
         );
-       
+        
+        device.setNamespace(this);
+        
+        nodesToDevices.put(folder, device);
 
         server.getNodeMap().addNode(folder);
         rootNode.addOrganizes(folder);
         
-        // Get all tags from the device and create a corresponding OPC-UA node. Link them.
-        // The node is then added to the device folder created above.
+        device.startup();
 
-        for (DeviceTag tag : device.getTags()) {
-
-            // Create a node for each tag. Tag should probably provide more node properties, for example the
-            // historicizing property.
-            UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
+    }
+    
+    public void addTag(DeviceTag tag) {
+        Device device = tag.getDevice();
+        UaFolderNode folder = nodesToDevices.inverse().get(device);
+        
+        UaVariableNode node = new UaVariableNode.UaVariableNodeBuilder(server.getNodeMap())
                     .setNodeId(new NodeId(namespaceIndex, this.name + "/" + device.getName() + "/" + tag.getName()))
                     .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                     .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
@@ -153,16 +158,24 @@ public class IridiusNamespace implements Namespace {
                     .setDataType(tag.getDataType())
                     .setTypeDefinition(Identifiers.BaseDataVariableType)
                     .setHistorizing(false)
-                    .setValue(new DataValue(new Variant(""), StatusCode.UNCERTAIN))
+                    .setValue(new DataValue(StatusCode.UNCERTAIN))
                     .build();
-
-            //node.setValue(new DataValue(Variant.NULL_VALUE));
-            tag.setNode(node);
-            
-            nodesToTags.put(node, tag);
-
-            folder.addOrganizes(node);
+        
+        nodesToTags.put(node, tag);
+        
+        folder.addOrganizes(node);
+    }
+    
+    public void setValue(DeviceTag tag, DataValue value) {
+        UaVariableNode node = nodesToTags.inverse().get(tag);
+        System.out.println("Setting value for tag " + tag.getDisplayName());
+        System.out.println(value.getValue());
+        if (node == null) {
+            System.out.println("Nodo non trovato per il tag " + tag.getDisplayName());
+            return;
         }
+        
+        node.setValue(value);
     }
 
     @Override
@@ -200,10 +213,13 @@ public class IridiusNamespace implements Namespace {
             ServerNode node = server.getNodeMap().get(readValueId.getNodeId());
 
             if (node != null) {
-                DeviceTag tag = nodesToTags.get(node);
-                if (tag != null) {
-                    
-                }
+                
+                // Should we read from the device a fresh value?
+                
+//                DeviceTag tag = nodesToTags.get(node);
+//                if (tag != null) {
+//                    
+//                }
                 DataValue value = node.readAttribute(
                         new AttributeContext(context),
                         readValueId.getAttributeId(),
@@ -211,6 +227,8 @@ public class IridiusNamespace implements Namespace {
                         readValueId.getIndexRange(),
                         readValueId.getDataEncoding()
                 );
+                
+                //System.out.println(value.getValue());
 
                 results.add(value);
             } else {
@@ -238,11 +256,12 @@ public class IridiusNamespace implements Namespace {
                             writeValue.getIndexRange()
                     );
                     
-                    // Find the device/tag connected to this node and
+                    // Inform the device of the new value
+                    
                     DeviceTag tag = nodesToTags.get(node);
                     if (tag != null) {
                         Device device = tag.getDevice();
-                        device.write(tag, writeValue.getValue().getValue());
+                        device.write(tag, writeValue.getValue());
                         System.out.println("Writing to tag: " + tag.getName());
                     } else {
                         System.out.println("Tag not found");

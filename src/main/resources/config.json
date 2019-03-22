@@ -3,54 +3,54 @@
 
     },
     "namespaces": [
-        
+
         {
-            "name": "Namespace 1",
-            "uri": "urn:opsi:namespace1",
-            
+            "name": "Device Group 1",
+            "uri": "urn:iridius:group1",
+
             "devices": [
                 {
                     "name": "Start lathe 1",
-                        "type": "it.itere.opsi.devices.FanucDevice",
-                        "config" : {
-                            "ip": "120.0.0.1",
-                            "port": "8391"
+                    "typex": "it.itere.opsi.devices.FanucDevice",
+                    "config": {
+                        "ip": "120.0.0.1",
+                        "port": "8391"
                     }
                 },
-                
+
                 {
                     "name": "Device 1",
-                        "typex": "it.itere.opsi.devices.DummyDevice",
-                        "config" : {
-                            "ip": "120.0.0.1",
-                            "key1": "value 1"
+                    "type": "org.iridius.devices.DummyDevice",
+                    "config": {
+                        "dummy1": 23
                     }
                 },
-                
+
                 {
                     "name": "Device 2",
-                        "typex": "it.itere.opsi.devices.MQTTDevice",
-                        "config" : {
-                            "url": "tcp://test.mosquitto.org:1883",
-                            "topic": "/Boiler/#",
-                            "payload": "json"
-                        }
+                    "typex": "it.itere.opsi.devices.MQTTDevice",
+                    "config": {
+                        "url": "tcp://test.mosquitto.org:1883",
+                        "topic": "/Boiler/#",
+                        "payload": "json"
+                    }
                 },
-                
+
                 {
                     "name": "CSV Device",
-                        "type": "it.itere.opsi.devices.CSVDevice",
-                        "config" : {
-                            "fields": ["temperature"],
-                            "file": "c:/progetti/dati.csv",
-                            "interval": "1000"
+                    "type": "org.iridius.devices.CSVDevice",
+                    "config": {
+                        "fields": ["temperature"],
+                        "file": "c:/progetti/dati.csv",
+                        "interval": "1000"
                     }
                 }
             ]
         },
-        
+
         {
-            "name": "Namespace 2"
+            "name": "Device Group 2",
+            "uri": "urn:iridius:group2"
         }
     ]
 }

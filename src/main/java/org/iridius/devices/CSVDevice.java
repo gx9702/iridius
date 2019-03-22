@@ -3,29 +3,24 @@ package org.iridius.devices;
 import org.iridius.Device;
 import org.iridius.DeviceTag;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FileUtils;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaNode;
-import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.types.builtin.DataValue;
 import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 /**
  *
- * @author Stefano
+ * @author Stefano Lissa
  */
 public class CSVDevice extends Device implements Runnable {
 
-    List<UaNode> nodes;
     List<String> fields;
     long interval = 5000;
     long lastFilePosition = 0;
 
     @Override
-    public void setConfig(Map config) {
-        super.setConfig(config);
+    public void startup() {
+        
         fields = (List<String>) config.get("fields");
         try {
             interval = Long.parseLong((String)config.get("interval"));
@@ -33,9 +28,17 @@ public class CSVDevice extends Device implements Runnable {
             
         }
         
+        for (String field : fields) {
+            DeviceTag tag = new DeviceTag();
+            tag.setName(field);
+            addTag(tag);
+        }
+        
         // TODO: Better thread management?
         new Thread(this).start();
     }
+    
+    
 
     @Override
     public void run() {
@@ -53,14 +56,7 @@ public class CSVDevice extends Device implements Runnable {
                     valueIdx++;
                     if (field.startsWith("-")) continue;
                     DeviceTag tag = tags.get(nodeIdx);
-                    
-                    // Get the associate node and update the value
-                    UaVariableNode node = tag.getNode();
-                    if (node != null) {
-                        // TODO: Set the status and the device time
-                        DataValue dv = new DataValue(new Variant(values[valueIdx]));
-                        node.setValue(dv);
-                    }
+                    setValue(tag, new DataValue(new Variant(values[valueIdx])));
                     nodeIdx++;
                 }
                 Thread.sleep(interval);
@@ -70,20 +66,6 @@ public class CSVDevice extends Device implements Runnable {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public List<DeviceTag> getTags() {
-        if (tags != null) return tags;
-        
-        tags = new ArrayList<>();
-        for (String field : fields) {
-            DeviceTag tag = new DeviceTag();
-            tag.setName(field);
-            tag.setDevice(this);
-            tags.add(tag);
-        }
-        return tags;
     }
 
 }
