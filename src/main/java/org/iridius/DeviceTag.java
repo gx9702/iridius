@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.itere.opsi;
+package org.iridius;
 
 import org.eclipse.milo.opcua.sdk.server.nodes.UaVariableNode;
 import org.eclipse.milo.opcua.stack.core.Identifiers;
@@ -21,11 +21,12 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.NodeId;
  * 
  * @author Stefano Lissa
  */
-public class OpsiDeviceTag {
+public class DeviceTag {
     private UaVariableNode node;
     private String name;
+    private String displayName;
     private NodeId dataType = Identifiers.String;
-    private OpsiDevice device;
+    private Device device;
 
     public String getName() {
         return name;
@@ -51,12 +52,21 @@ public class OpsiDeviceTag {
         this.dataType = dataType;
     }
 
-    public OpsiDevice getDevice() {
+    public Device getDevice() {
         return device;
     }
 
-    public void setDevice(OpsiDevice device) {
+    public void setDevice(Device device) {
         this.device = device;
+    }
+
+    public String getDisplayName() {
+        if (displayName == null) return name;
+        return displayName;
+    }
+
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
     }
     
 }

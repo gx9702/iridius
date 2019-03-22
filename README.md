@@ -1,13 +1,10 @@
-# opsi
-Full OPC-UA server based on Milo and public device drivers
-
-Note: opsi is just a temporary name, no checks have been made to see if it is a
-copyrighted word or like. Assume this name will be changed.
+# Iridius
+Full OPC-UA server based on Milo and public device drivers.
 
 ## Discussing
 
-I've opened a [Slack channel](https://opsigroup.slack.com) but any other
-team workspace suggest is welcome.
+I've opened a [Slack channel](https://iridius.slack.com) but any other
+team workspace solution is welcome.
 
 ## Objectives of this project
 
@@ -21,86 +18,11 @@ them easy to use and integrated.
 The core part of this system is [Milo](https://github.com/eclipse/milo), 
 the open source OPC-UA stack (plus the client and server SDK). 
 
-Then we need drivers to communicate with devices. Fanuc, Siemens S7, Hakko,
-Schneider, general Modbus and so on. This is the discovery part not yet started
-and for which we need your help!
+## Documentation
 
-Of course a driver wrapper must be defined, so a driver can be loaded and
-initialized by the server. At minimum, the driver should be able to be configured
-to get and set values from the device and expose read and write methods that match
-the write and read of OPC-UA.
+See the [Iridius Wiki pages](https://github.com/stefanolissa/iridius/wiki).
 
-Then there is the configuration part: we need to define the configuration used to
-define the namespaces to create, the devices to connect to, the drivers to use and 
-the specific configurations for those drivers.
 
-Last we need to develop the real server or better that part of the server which loads
-the configuration, creates the namespaces and the OPC-UA nodes. Here an important knowledge
-of Milo and the OPC-UA standard is mandatory. Anyone?
-
-## Devices
-
-The OPC-UA server should expose to the World our devices. So we need the concept of _device_
-which should do two main things: define what of our machine is exposed via OPC-UA and so
-get that values a provide them to the OPC-UA server and write back values from the OPC-UA server
-to the device.
-
-In this project a _device_ is a software component able to intermediate between the machine and the 
-OPC-UA server.
-
-Of course a _device_ could include ready-to-use libraries which implement special industry protocols
-(like modbus, Siemens S7, ...) or be a full implementation of a communication stack with
-custom machines, not standard PLC and so on.
-
-Here a list of projects which could have interesting parts to build a _device_. More in-dept
-documentation on devices in this <a href="devices.md">page</a>.
-
-### Modbus
-
-- https://sourceforge.net/projects/easymodbustcp-udp-java/
-
-### Siemens S7
-
-- http://snap7.sourceforge.net/
-
-### Fanuc
-
-I have some working Java code which is able to send a full g-code part program to a
-Fanuc CNC and the machine status can be read with MT-Connect if the interface is available
-or directly. The code is based on Fanuc official libraries and parts of the Android Java code
-available with those libraries. Of course I cannot publish it here.
-
-The Java code loads the Windows Fanuc DLLs or the Linux Fanuc library to send the part program,
-while reading the machine status is more easy and can be done directly.
-
-- https://www.inventcom.net/fanuc-focas-library/general/fwlib32
-
-### CSV
-
-Could sound old style but there are machines which expose data as CSV file. We need to read
-it incrementally and expose the available fields. Probably this is the easy-to-write driver
-(of course read only).
-
-### MQTT
-
-Again, is a machine is a publisher we can have a driver which is a subscriber for that machine and
-expose the published data. Since OPC-UA can work in a publisher-subscriber fashion... to be explored.
-
-### MT-Connect
-
-A standard for machines, specially CNC, to expose data. Well defined should be easy to
-interface with. Usually MT-Connect has an agent which is actually a digital twin of the machine
-and exposes the data knowing how to communicate with the devices, possibly with proprietary protocol.
-
-- https://www.mtconnect.org
-- https://github.com/mtconnect
-- https://www.mtconnect.org/opc-ua-companion-specification/
-
-### HTTP
-
-There are machines which, usually via their HMI, expose data via HTTP only. Since the number of ways
-to send data via HTTP is enormous, a device basic implementation could be created to address the common issues
-(how to start and keep a connection, how to recover dropped connection, how to deal with proxies and so on).
 
 ## Simulators and clients
 
@@ -119,3 +41,20 @@ with the server.
 ### MQTT
 
 - https://github.com/eclipse/paho.mqtt-spy
+
+## Server Management User Interface
+
+Probably at least a minimal user interface to manage the server is required. Of course
+we need at least a light authentication system to start it.
+
+I don't know if server could be controlled directly with an OPC-UA client, but probably it could.
+
+## Installation
+
+We need a way to install it for example as a service under Windows. There are many open source project
+java based with good installers, for example Tomcat.
+
+## Resources
+
+- An interesting webinar by Kepware on the adavantage to have 
+[protocol uniformity in accessing the manufaturing data](https://www.kepware.com/en-us/landing-pages/standardized-communications-layer-webinar/thank-you/)

@@ -11,7 +11,7 @@
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
 
-package it.itere.opsi;
+package org.iridius;
 
 import java.io.File;
 import java.io.FileInputStream;

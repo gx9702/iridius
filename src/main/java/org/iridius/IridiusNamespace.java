@@ -10,7 +10,7 @@
  * and the Eclipse Distribution License is available at
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
-package it.itere.opsi;
+package org.iridius;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory;
 
 import static org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.Unsigned.ubyte;
 
-public class OpsiNamespace implements Namespace {
+public class IridiusNamespace implements Namespace {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -73,12 +73,12 @@ public class OpsiNamespace implements Namespace {
     String uri;
     Map config;
     
-    Map<UaNode, OpsiDeviceTag> nodesToTags = new HashMap<>();
+    Map<UaNode, DeviceTag> nodesToTags = new HashMap<>();
     
     // Keeps track of all added devices (maybe it is not useful).
-    Set<OpsiDevice> devices = new HashSet();
+    Set<Device> devices = new HashSet();
 
-    public OpsiNamespace(OpcUaServer server, UShort namespaceIndex, Map config) {
+    public IridiusNamespace(OpcUaServer server, UShort namespaceIndex, Map config) {
         this.server = server;
         this.namespaceIndex = namespaceIndex;
         this.name = (String) config.get("name");
@@ -120,7 +120,7 @@ public class OpsiNamespace implements Namespace {
      * 
      * @param device
      */
-    public void addDevice(OpsiDevice device) {
+    public void addDevice(Device device) {
         
         // Just a container of all added devices
         devices.add(device);
@@ -132,6 +132,7 @@ public class OpsiNamespace implements Namespace {
                 new QualifiedName(namespaceIndex, device.getName()),
                 LocalizedText.english(device.getName())
         );
+       
 
         server.getNodeMap().addNode(folder);
         rootNode.addOrganizes(folder);
@@ -139,7 +140,7 @@ public class OpsiNamespace implements Namespace {
         // Get all tags from the device and create a corresponding OPC-UA node. Link them.
         // The node is then added to the device folder created above.
 
-        for (OpsiDeviceTag tag : device.getTags()) {
+        for (DeviceTag tag : device.getTags()) {
 
             // Create a node for each tag. Tag should probably provide more node properties, for example the
             // historicizing property.
@@ -148,13 +149,14 @@ public class OpsiNamespace implements Namespace {
                     .setAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                     .setUserAccessLevel(ubyte(AccessLevel.getMask(AccessLevel.READ_WRITE)))
                     .setBrowseName(new QualifiedName(namespaceIndex, tag.getName()))
-                    .setDisplayName(LocalizedText.english(tag.getName()))
+                    .setDisplayName(LocalizedText.english(tag.getDisplayName()))
                     .setDataType(tag.getDataType())
                     .setTypeDefinition(Identifiers.BaseDataVariableType)
                     .setHistorizing(false)
+                    .setValue(new DataValue(new Variant(""), StatusCode.UNCERTAIN))
                     .build();
 
-            node.setValue(new DataValue(Variant.NULL_VALUE));
+            //node.setValue(new DataValue(Variant.NULL_VALUE));
             tag.setNode(node);
             
             nodesToTags.put(node, tag);
@@ -198,6 +200,10 @@ public class OpsiNamespace implements Namespace {
             ServerNode node = server.getNodeMap().get(readValueId.getNodeId());
 
             if (node != null) {
+                DeviceTag tag = nodesToTags.get(node);
+                if (tag != null) {
+                    
+                }
                 DataValue value = node.readAttribute(
                         new AttributeContext(context),
                         readValueId.getAttributeId(),
@@ -233,8 +239,10 @@ public class OpsiNamespace implements Namespace {
                     );
                     
                     // Find the device/tag connected to this node and
-                    OpsiDeviceTag tag = nodesToTags.get(node);
+                    DeviceTag tag = nodesToTags.get(node);
                     if (tag != null) {
+                        Device device = tag.getDevice();
+                        device.write(tag, writeValue.getValue().getValue());
                         System.out.println("Writing to tag: " + tag.getName());
                     } else {
                         System.out.println("Tag not found");

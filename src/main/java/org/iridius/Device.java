@@ -3,10 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.itere.opsi;
+package org.iridius;
 
 import java.util.List;
 import java.util.Map;
+import org.eclipse.milo.opcua.stack.core.types.builtin.Variant;
 
 /**
  * This represents a generic device we're connecting to the Opsi server using an
@@ -20,12 +21,26 @@ import java.util.Map;
  * 
  * @author Stefano Lissa
  */
-public abstract class OpsiDevice {
+public abstract class Device {
 
     protected String name;
     protected Map config;
-    protected List<OpsiDeviceTag> tags;
+    protected List<DeviceTag> tags;
+    protected boolean initialized = false;
     
+    /**
+     * Called on initialization and called again on reinitialization.
+     */
+    public void startup() {
+        if (initialized) {
+            shutdown();
+        }
+        
+    }
+    
+    
+    public void shutdown() {
+    }
 
     public String getName() {
         return name;
@@ -43,5 +58,12 @@ public abstract class OpsiDevice {
         this.config = config;
     }    
     
-    public abstract List<OpsiDeviceTag> getTags();
+    public abstract List<DeviceTag> getTags();
+    
+    public void write(DeviceTag tag, Variant value){
+    }
+    
+    public Object read(DeviceTag tag){
+        return "";
+    }
 }

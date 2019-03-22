@@ -10,7 +10,7 @@
  * and the Eclipse Distribution License is available at
  *   http://www.eclipse.org/org/documents/edl-v10.html.
  */
-package it.itere.opsi;
+package org.iridius;
 
 import java.io.File;
 import java.security.Security;
@@ -55,7 +55,7 @@ import org.eclipse.milo.opcua.stack.core.types.builtin.QualifiedName;
 import org.eclipse.milo.opcua.stack.core.types.builtin.unsigned.UShort;
 import org.jooq.lambda.Collectable;
 
-public class OpsiServer {
+public class IridiusServer {
 
     static {
         CryptoRestrictions.remove();
@@ -65,7 +65,7 @@ public class OpsiServer {
     }
 
     public static void main(String[] args) throws Exception {
-        OpsiServer server = new OpsiServer();
+        IridiusServer server = new IridiusServer();
 
         server.startup().get();
 
@@ -78,7 +78,7 @@ public class OpsiServer {
 
     private final OpcUaServer server;
 
-    public OpsiServer() throws Exception {
+    public IridiusServer() throws Exception {
         File securityTempDir = new File(System.getProperty("java.io.tmpdir"), "security");
         if (!securityTempDir.exists() && !securityTempDir.mkdirs()) {
             throw new Exception("unable to create security temp dir: " + securityTempDir);
@@ -181,7 +181,7 @@ public class OpsiServer {
 
             // TODO: Compact this code with register and add
             UShort namespaceIndex = server.getNamespaceManager().registerUri((String) namespace.get("uri"));
-            OpsiNamespace ns = new OpsiNamespace(server, namespaceIndex, namespace);
+            IridiusNamespace ns = new IridiusNamespace(server, namespaceIndex, namespace);
             server.getNamespaceManager().addNamespace(ns);
 
             // Process devices
@@ -190,14 +190,15 @@ public class OpsiServer {
                 System.out.println(deviceData.get("name"));
                 
                 try {
-                    OpsiDevice device = (OpsiDevice) Class.forName((String) deviceData.get("type")).newInstance();
+                    Device device = (Device) Class.forName((String) deviceData.get("type")).newInstance();
                     device.setName((String) deviceData.get("name"));
                     device.setConfig((Map) deviceData.get("config"));
                     
                     // Add gthe device to the namespace
                     ns.addDevice(device);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println("Unable to instantiate the device: " + deviceData);
+                    //e.printStackTrace();
                 }
             }
         }

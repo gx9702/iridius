@@ -1,4 +1,4 @@
 /**
  * Adapater definition and samples.
  */
-package it.itere.opsi.devices;
+package org.iridius.devices;

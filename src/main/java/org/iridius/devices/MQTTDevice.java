@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package it.itere.opsi.devices;
+package org.iridius.devices;
 
-import it.itere.opsi.OpsiDevice;
-import it.itere.opsi.OpsiDeviceTag;
+import org.iridius.Device;
+import org.iridius.DeviceTag;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,17 +25,17 @@ import org.eclipse.paho.client.mqttv3.MqttMessage;
  * 
  * @author Stefano Lissa
  */
-public class MQTTDevice extends OpsiDevice implements MqttCallback {
+public class MQTTDevice extends Device implements MqttCallback {
 
     MqttClient myClient;
     MqttConnectOptions connOpt;
 
     @Override
-    public List<OpsiDeviceTag> getTags() {
+    public List<DeviceTag> getTags() {
         
         if (tags != null) return tags;
         tags = new ArrayList();
-        OpsiDeviceTag tag = new OpsiDeviceTag();
+        DeviceTag tag = new DeviceTag();
         
         tag.setName("value");
         tag.setDevice(this);
