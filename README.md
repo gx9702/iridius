@@ -1,4 +1,7 @@
 # Iridius
+
+[![Join the chat at https://gitter.im/iridius-server/community](https://badges.gitter.im/iridius-server/community.svg)](https://gitter.im/iridius-server/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Full OPC-UA server based on Milo and public device drivers.
 
 ## Discussing
